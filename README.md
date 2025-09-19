@@ -45,27 +45,32 @@ python -m venv .venv
 .venv\Scripts\activate
 # Linux / macOS
 source .venv/bin/activate
-2. Install Dependencies
+```
+### 2. Install Dependencies
+```bash
 pip install --upgrade pip
 pip install -r requirements.txt
+```
 
-3. Run the Server
+### 3. Run the Server
+```bash
 uvicorn main:app --reload --port 8000
-
-4. Open Swagger UI
-
+```
+### 4. Open Swagger UI
+```bash
 Visit → http://127.0.0.1:8000/docs
+```
 
-🔥 API Documentation
+### 🔥 API Documentation
+```bash
 POST /analyze_sync
 
 Upload a PDF/TXT → get result immediately.
 
 curl -F "file=@data/TSLA-Q2-2025-Update.pdf" http://127.0.0.1:8000/analyze_sync
-
-
-Example Response:
-
+```
+### Example Response:
+```bash
 {
   "status": "ok",
   "result": {
@@ -86,43 +91,43 @@ Example Response:
     }
   }
 }
-
-POST /analyze
-
+```
+### POST /analyze
+```bash
 Upload file
 
 Returns analysis_id
 
 Job runs in background
+```
 
-GET /analysis/{analysis_id}
-
+### GET /analysis/{analysis_id}
+```bash
 Fetch result when job finishes
-
-🧪 Run Tests
+```
+### 🧪 Run Tests
+```bash
 pytest -q
-
-📦 Tech Stack
-
+```
+### 📦 Tech Stack
+```bash
 FastAPI – API framework
-
 PyPDF2 – PDF text extraction
 
 SQLAlchemy + SQLite – data persistence
 
 pytest – testing
+```
 
-📌 Notes
-
+### 📌 Notes
+```bash
 Current analysis is rule-based, not hallucinations.
-
 For production:
-
-Replace thread-based queue with Celery + Redis.
-
-Use pdfminer.six for better PDF parsing.
-
-🙋 Author
-
+  Replace thread-based queue with Celery + Redis.
+  Use pdfminer.six for better PDF parsing.
+```
+#### 🙋 Author
+```bash
 Debugged and implemented by Sahil Surendra Deshmukh
 📧 Email: sahidesh02@gmail.com
+```
