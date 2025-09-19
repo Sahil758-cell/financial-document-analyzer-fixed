@@ -1,38 +1,58 @@
-# Financial Document Analyzer - Debug Assignment
+Financial Document Analyzer (Debug Assignment – Fixed Version)
 
-## Project Overview
-A comprehensive financial document analysis system that processes corporate reports, financial statements, and investment documents using AI-powered analysis agents.
+This project started as a buggy assignment repo. I debugged it, fixed the broken code, and added new functionality so it’s now a working Financial Document Analyzer API built with FastAPI.
+What This Project Does
+- Accepts PDF or TXT financial documents.
+- Extracts text (using PyPDF2).
+- Runs a rule-based analysis:
+   • Generates a quick summary of the document.
+   • Extracts key financial figures (Revenue, Net Income, EPS, etc).
+   • Computes simple metrics like profit margin.
+   • Provides a basic recommendation (positive / neutral / negative).
+- Supports two modes:
+   • Sync analysis → /analyze_sync → immediate result.
+   • Async analysis → /analyze → enqueues background job → fetch with /analysis/{id}.
+- Stores results in a lightweight SQLite database (analysis.db).
+- Provides an interactive Swagger UI at /docs.
+Original Problems (Bugs) & How I Fixed Them
+File	Bug(s) Found	Fix Applied
+agents.py	llm = llm (undefined), agents gave nonsense/hallucinations	Removed fake CrewAI agents and replaced with a deterministic rule-based analyzer (financial_analyst).
+tools.py	Used Pdf (nonexistent class), no actual text extraction	Replaced with PyPDF2.PdfReader for real PDF text extraction. Added fallback error handling.
+task.py	Tasks used CrewAI/Agents with hallucination prompts, no persistence	Replaced with real analyze_financial_document() function. Added background worker and SQLite DB.
+main.py	Endpoints broken, wrong CrewAI imports, no health check	Rebuilt API with FastAPI: /analyze, /analyze_sync, /analysis/{id}.
+requirements.txt	Overly complex, pinned wrong versions, install conflicts	Created a minimal requirements.txt that installs cleanly and supports all features.
 
-## Getting Started
+Setup Instructions
+1. Clone & Setup
+git clone https://github.com/<your-username>/financial-document-analyzer-fixed.git
+cd financial-document-analyzer-fixed
 
-### Install Required Libraries
-```sh
-pip install -r requirement.txt
-```
-
-### Sample Document
-The system analyzes financial documents like Tesla's Q2 2025 financial update.
-
-**To add Tesla's financial document:**
-1. Download the Tesla Q2 2025 update from: https://www.tesla.com/sites/default/files/downloads/TSLA-Q2-2025-Update.pdf
-2. Save it as `data/sample.pdf` in the project directory
-3. Or upload any financial PDF through the API endpoint
-
-**Note:** Current `data/sample.pdf` is a placeholder - replace with actual Tesla financial document for proper testing.
-
-# You're All Not Set!
-🐛 **Debug Mode Activated!** The project has bugs waiting to be squashed - your mission is to fix them and bring it to life.
-
-## Debugging Instructions
-
-1. **Identify the Bug**: Carefully read the code in each file and understand the expected behavior. There is a bug in each line of code. So be careful.
-2. **Fix the Bug**: Implement the necessary changes to fix the bug.
-3. **Test the Fix**: Run the project and verify that the bug is resolved.
-4. **Repeat**: Continue this process until all bugs are fixed.
-
-## Expected Features
-- Upload financial documents (PDF format)
-- AI-powered financial analysis
-- Investment recommendations
-- Risk assessment
-- Market insights
+python -m venv .venv
+.venv\Scripts\activate   (Windows)
+source .venv/bin/activate  (Linux/Mac)
+2. Install Dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+3. Run the Server
+uvicorn main:app --reload --port 8000
+4. Open Swagger UI at http://127.0.0.1:8000/docs
+API Documentation
+POST /analyze_sync → Upload a PDF or TXT and get results immediately.
+POST /analyze → Upload a file, returns an analysis_id, processes in background.
+GET /analysis/{id} → Fetch results for a queued analysis.
+Example curl:
+curl -F "file=@data/TSLA-Q2-2025-Update.pdf" http://127.0.0.1:8000/analyze_sync
+Running Tests
+pytest -q
+Tech Stack
+- FastAPI
+- PyPDF2
+- SQLAlchemy + SQLite
+- pytest
+Notes
+- Current analysis is rule-based (not AI hallucinations).
+- For production, async queue can be upgraded to Celery + Redis.
+- For richer PDF parsing, swap PyPDF2 with pdfminer.six.
+Author
+Debugged and implemented by Sahil Surendra Deshmukh
+Email:sahidesh02@gmail.com
